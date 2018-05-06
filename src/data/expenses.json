@@ -2,21 +2,36 @@
   {
     "name": "Coffee",
     "amount": 4,
-    "date": "01/03/18"
+    "date": "03/01/18"
   },
   {
     "name": "Amazon",
     "amount": 25,
-    "date": "10/03/18"
+    "date": "03/10/18"
   },
   {
     "name": "Museum Tickets",
     "amount": 10,
-    "date": "20/03/18"
+    "date": "03/20/18"
   },
   {
     "name": "Gifts",
     "amount": 8,
-    "date": "25/03/18"
+    "date": "03/25/18"
+  },
+  {
+    "name": "Gym",
+    "amount": 12,
+    "date": "03/26/18"
+  },
+  {
+    "name": "Flowers",
+    "amount": 3,
+    "date": "03/27/18"
+  },
+  {
+    "name": "Coffee",
+    "amount": 8,
+    "date": "03/28/18"
   }
 ]
