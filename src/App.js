@@ -23,26 +23,49 @@ var expenses = [
 let width = 900;
 let height = 900;
 let radius = 10;
-let simulation = d3.forceSimulation();
+let simulation = d3.forceSimulation()
+  .force('center', d3.forceCenter(width / 2, height / 2))
+  // .force('charge', d3.forceManyBody())
+  .force('collide', d3.forceCollide())
+  .stop();
 
 class App extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+    this.forceTick = this.forceTick.bind(this);
+    this.renderCircles = this.renderCircles.bind(this);
+  }
 
+  componentWillMount() {
+    simulation.on('tick', this.forceTick);
   }
 
   componentDidMount() {
     this.container = d3.select(this.refs.container);
-    // draw expenses circles
-    let circles = this.container.selectAll('circle')
-      .data(expenses, d => d.name);
-    // exit
-    circles.exit().remove();
-    // enter/update
-    circles = circles.enter().append('circle')
-      .merge(circles)
-      .attr('r', radius);
+    this.renderCircles();
+    simulation.nodes(expenses).alpha(0.9).restart();
   }
 
+  componentDidUpdate(){
+    this.renderCircles();
+  }
+
+  renderCircles(){
+    // draw expenses circles
+    this.circles = this.container.selectAll('circle')
+      .data(expenses, d => d.name);
+    // exit
+    this.circles.exit().remove();
+    // enter/update
+    this.circles = this.circles.enter().append('circle')
+      .merge(this.circles)
+      .attr('r', radius)
+      .attr('opacity', 0.5);
+  }
+  forceTick(){
+    this.circles.attr('cx', d => d.x)
+      .attr('cy', d => d.y);
+  }
   render() {
     return (
       <svg width={width} height={height} ref="container">
