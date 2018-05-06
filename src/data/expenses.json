@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Coffee",
+    "amount": 4,
+    "date": "01/03/18"
+  },
+  {
+    "name": "Amazon",
+    "amount": 25,
+    "date": "10/03/18"
+  },
+  {
+    "name": "Museum Tickets",
+    "amount": 10,
+    "date": "20/03/18"
+  },
+  {
+    "name": "Gifts",
+    "amount": 8,
+    "date": "25/03/18"
+  }
+]

@@ -1,32 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as d3 from 'd3';
+import expenses from './data/expenses';
 
-var expenses = [
-    {
-      name: 'Coffee',
-      amount: 4,
-      date: new Date()
-    },
-    {
-      name: 'Safeway',
-      amount: 20,
-      date: new Date()
-    },
-    {
-      name: 'Amazon',
-      amount: 15,
-      date: new Date()
-    },
-
-];
 let width = 900;
 let height = 900;
 let radius = 10;
 let simulation = d3.forceSimulation()
   .force('center', d3.forceCenter(width / 2, height / 2))
   // .force('charge', d3.forceManyBody())
-  .force('collide', d3.forceCollide())
+  .force('collide', d3.forceCollide(radius))
   .stop();
 
 class App extends Component {
