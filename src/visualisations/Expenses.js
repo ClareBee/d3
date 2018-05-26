@@ -3,18 +3,18 @@ import * as d3 from 'd3';
 import chroma from 'chroma-js';
 import _ from 'lodash';
 
-const width = 900;
-const height = 900;
+const width = 600;
+const height = 600;
 const margin = { top: 20, right: 20, bottom: 20, left: 20};
-const radius = 10;
+const radius = 7;
 
-const xScale = d3.scaleBand().domain([0, 1, 2, 3, 4, 5, 6])
-  .range([margin.left, width - margin.right]);
-const colorScale = chroma.scale(['#53cf8d', '#f7d283' ,'#c85151']);
-const amountScale = d3.scaleLog();
+let xScale = d3.scaleBand().domain([0, 1, 2, 3, 4, 5, 6]);
+let yScale = d3.scaleLinear().range([height - margin.bottom, margin.top]);
+let colorScale = chroma.scale(['#53cf8d', '#f7d283' ,'#c85151']);
+console.log(colorScale);
+let amountScale = d3.scaleLog();
 
 let simulation = d3.forceSimulation()
-  .force('center', d3.forceCenter(width / 2, height / 2))
   // .force('charge', d3.forceManyBody(-10))
   .force('collide', d3.forceCollide(radius))
   .force('x', d3.forceX(d => d.focusX))
@@ -25,43 +25,46 @@ class Expenses extends React.Component {
   constructor(props) {
     super(props);
     this.forceTick = this.forceTick.bind(this);
-    this.renderCircles = this.renderCircles.bind(this);
-    simulation.on('tick', this.forceTick);
   }
 
-  componentWillMount() {
-
-    let row = -1;
-    const expenses = _.chain(this.props.expenses)
-      .groupBy(d => d3.timeWeek.floor(d.date))
-      .sortBy((expenses, week) => new Date(week))
-      .map(expenses => {
-        row += 1;
-        return _.map(expenses, exp => {
-          return Object.assign(exp, {
-            focusX: xScale(exp.date.getDay()),
-            focusY: row * 120
-          })
-        })
-      }).flatten().value();
-    console.log(expenses)
-    let amountExtent = d3.extent(expenses, d => d.amount);
-    amountScale.domain(amountExtent);
-
-    this.setState({expenses});
+  componentDidUpdate() {
+    this.calculateData();
   }
 
   componentDidMount() {
     this.container = d3.select(this.refs.container);
     this.renderCircles();
+    this.calculateData();
     simulation.nodes(this.props.expenses).alpha(0.9).restart();
   }
 
-  componentDidUpdate(){
-    this.renderCircles();
+  componentWillMount(){
+    xScale.range([margin.left, width - margin.right])
+    simulation.on('tick', this.forceTick);
+  }
+
+  calculateData() {
+    let weeksExtent = d3.extent(this.props.expenses,
+      d => d3.timeWeek.floor(d.date));
+    yScale.domain(weeksExtent);
+    let expenses = _.chain(this.props.expenses)
+      .groupBy(d => d3.timeWeek.floor(d.date))
+      .map((expenses, week) => {
+        week = new Date(week);
+        return _.map(expenses, exp => {
+          return Object.assign(exp, {
+            focusX: xScale(exp.date.getDay()),
+            focusY: yScale(week)
+          });
+        });
+      }).flatten().value();
+    console.log(expenses)
+    let amountExtent = d3.extent(expenses, d => d.amount);
+    amountScale.domain(amountExtent);
   }
 
   renderCircles(){
+    console.log(colorScale(10))
     // draw expenses circles
     this.circles = this.container.selectAll('circle')
       .data(this.props.expenses, d => d.name);
@@ -71,10 +74,11 @@ class Expenses extends React.Component {
     this.circles = this.circles.enter().append('circle')
       .merge(this.circles)
       .attr('r', radius)
-      .attr('fill', d => colorScale(amountScale(d.amount)))
+      .attr('fill', d => colorScale(amountScale(Math.abs(d.amount))))
       .attr('fill-opacity', 0.25)
       .attr('stroke-width', 3)
-      .attr('stroke', d => colorScale(amountScale(d.amount)));
+      .attr('stroke', d => colorScale(amountScale(Math.abs(d.amount))));
+    console.log(this.circles)
   }
 
   forceTick(){

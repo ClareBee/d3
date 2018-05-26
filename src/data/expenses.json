@@ -33,5 +33,65 @@
     "name": "Coffee",
     "amount": 8,
     "date": "03/28/18"
+  },
+  {
+    "name": "Waitrose",
+    "amount": 50,
+    "date": "04/01/18"
+  },
+  {
+    "name": "Amazon",
+    "amount": 60,
+    "date": "04/01/18"
+  },
+  {
+    "name": "Council Tax",
+    "amount": 115,
+    "date": "04/02/18"
+  },
+  {
+    "name": "Electricity",
+    "amount": 20,
+    "date": "04/02/18"
+  },
+  {
+    "name": "Boots",
+    "amount": 10,
+    "date": "04/04/18"
+  },
+  {
+    "name": "Bus Ticket",
+    "amount": 1,
+    "date": "04/04/18"
+  },
+  {
+    "name": "Coffee",
+    "amount": 3,
+    "date": "04/06/18"
+  },
+  {
+    "name": "Rent",
+    "amount": 600,
+    "date": "04/06/18"
+  },
+  {
+    "name": "Takeaway",
+    "amount": 16,
+    "date": "04/07/18"
+  },
+  {
+    "name": "Boots",
+    "amount": 10,
+    "date": "04/08/18"
+  },
+  {
+    "name": "Coffee",
+    "amount": 3,
+    "date": "04/08/18"
+  },
+  {
+    "name": "Chocolate",
+    "amount": 1,
+    "date": "04/09/18"
   }
 ]
