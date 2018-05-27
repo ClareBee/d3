@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 const width = 700;
 const height = 600;
-const margin = { top: 30, right: 30, bottom: 30, left: 30};
+const margin = { top: 30, right: 30, bottom: 30, left: 50};
 const radius = 7;
 
 const daysOfWeek = [[0, 'S'], [1, 'M'], [2, 'T'], [3, 'W'], [4, 'Th'], [5, 'F'], [6, 'Sa']];
@@ -26,10 +26,13 @@ class Expenses extends React.Component {
     super(props);
     this.state = {
       selectedWeek: null,
+      weeks: null,
+      days: null,
     }
     this.forceTick = this.forceTick.bind(this);
     this.renderDayCircles = this.renderDayCircles.bind(this);
     this.calculateData = this.calculateData.bind(this);
+    this.renderWeeks = this.renderWeeks.bind(this);
   }
 
   componentDidUpdate() {
@@ -38,8 +41,8 @@ class Expenses extends React.Component {
 
   componentDidMount() {
     this.container = d3.select(this.refs.container);
+    this.renderWeeks();
     this.renderDayCircles();
-
     this.renderCircles();
     this.calculateData();
     simulation.nodes(this.props.expenses).alpha(0.9).restart();
@@ -59,6 +62,15 @@ class Expenses extends React.Component {
     let perAngle = Math.PI / 6;
     let selectedWeekRadius = (width - margin.right - margin.left) / 2;
 
+  // create rectangle for weeks
+    let weeks = d3.timeWeek.range(weeksExtent[0], d3.timeWeek.offset(weeksExtent[1], 1));
+    this.weeks = _.map(weeks, week => {
+      return {
+        week,
+        x: margin.left,
+        y: yScale(week) + height,
+      }
+    });
   // create circles for days/semi circle
     this.days = _.map(daysOfWeek, date => {
       let [dayOfWeek, name] = date;
@@ -77,7 +89,7 @@ class Expenses extends React.Component {
         return _.map(expenses, exp => {
           let dayOfWeek = exp.date.getDay();
           let focusX = xScale(exp.date.getDay());
-          let focusY = yScale(week) + height/2;
+          let focusY = yScale(week) + height;
           if (week.getTime() === selectedWeek.getTime()) {
             let perAngle = Math.PI / 6;
             let angle = Math.PI - perAngle * dayOfWeek;
@@ -145,6 +157,45 @@ class Expenses extends React.Component {
       .attr('fill', '#bbb')
       .style('font-weight', 'bold')
       .text(d => d.name)
+  }
+
+  renderWeeks() {
+    let weeksExtent = d3.extent(this.props.expenses,
+      d => d3.timeWeek.floor(d.date));
+    yScale.domain(weeksExtent);
+
+    let selectedWeek = weeksExtent[1];
+    let perAngle = Math.PI / 6;
+    let selectedWeekRadius = (width - margin.right - margin.left) / 2;
+
+  // create rectangle for weeks
+    let calcWeeks = d3.timeWeek.range(weeksExtent[0], d3.timeWeek.offset(weeksExtent[1], 1));
+    let weekRes = _.map(calcWeeks, week => {
+      return {
+        week,
+        x: margin.left,
+        y: yScale(week) + height,
+      }
+    });
+    let weeks = this.container.selectAll('.week')
+      .data(weekRes, d => d.name)
+      .enter().append('g')
+      .classed('week', true)
+      .attr('transform', d => 'translate(' + [d.x, d.y] + ')')
+
+    const rectHeight = 10;
+    weeks.append('rect')
+      .attr('width', width - margin.left - margin.right)
+      .attr('height', rectHeight)
+      .attr('y', - rectHeight / 2)
+      .attr('fill', '#ccc')
+      .attr('opacity', 0.25)
+
+    const weekFormat = d3.timeFormat('%d/%m')
+    weeks.append('text')
+      .attr('text-anchor', 'end')
+      .attr('dy', '.35em')
+      .text(d => weekFormat(d.week))
   }
 
   forceTick(){
